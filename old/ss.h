@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <gmp.h>
+#include <stdbool.h>
 #include <stdint.h>
 
 //

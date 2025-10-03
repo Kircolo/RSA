@@ -5,12 +5,7 @@ LIBFLAGS = -lm $(shell pkg-config --libs gmp)
 
 .PHONY: all clean
 
-all: keygen encrypt decrypt	
-
-tests: tests_numtheory
-
-check: tests_numtheory
-	./tests_numtheory
+all: keygen encrypt decrypt
 
 keygen: keygen.o ss.o randstate.o numtheory.o
 	$(CC) -o $@ $^ $(LIBFLAGS)
@@ -21,11 +16,8 @@ encrypt: encrypt.o ss.o randstate.o numtheory.o
 decrypt: decrypt.o ss.o randstate.o numtheory.o
 	$(CC) -o $@ $^ $(LIBFLAGS)
 
-tests_numtheory: tests_numtheory.o numtheory.o randstate.o
-	$(CC) -o $@ $^ $(LIBFLAGS)
-
 clean:
-	rm -f keygen encrypt decrypt  tests_numtheory *.o
+	rm -f keygen encrypt decrypt *.o
 
 %.o : %.c
 	$(CC) $(CFLAGS) -c $<
