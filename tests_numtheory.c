@@ -116,7 +116,7 @@ static bool test_is_prime_flaky(void) {
     mpz_t n; mpz_init_set_ui(n,5); // small prime; bad witnesses 0 or 1 are likely with small modulus
     const uint64_t iters = 1;
 
-    for (uint64_t seed = 1; seed <= 5000; seed++) {
+    for (uint64_t seed = 1; seed <= 10000; seed++) {
         randstate_init(seed);
         bool ok = is_prime(n, iters);
         randstate_clear();
@@ -128,7 +128,7 @@ static bool test_is_prime_flaky(void) {
         }
     }
     mpz_clear(n);
-    printf("No false negative found in seeds 1..5000 (still likely with other seeds).\n");
+    printf("No false negative found in seeds 1..10000 (still likely with other seeds).\n");
     printf("PASS\n");
     return true;
 }
@@ -142,7 +142,7 @@ static bool test_make_prime_bitlen(void) {
     const uint64_t iters = 25;  // reasonable MR rounds
     mpz_t p; mpz_init(p);
 
-    for (uint64_t seed = 1; seed <= 2000; seed++) {
+    for (uint64_t seed = 1; seed <= 10000; seed++) {
         randstate_init(seed);
         make_prime(p, bits, iters);
         randstate_clear();
@@ -164,7 +164,7 @@ static bool test_make_prime_bitlen(void) {
         }
     }
     mpz_clear(p);
-    printf("No bit-length/oddness issue observed in seeds 1..2000 (but the bug still exists statistically).\n");
+    printf("No bit-length/oddness issue observed in seeds 1..10000 (but the bug still exists statistically).\n");
     printf("PASS\n");
     return true;
 }

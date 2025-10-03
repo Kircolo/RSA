@@ -7,10 +7,13 @@ LIBFLAGS = -lm $(shell pkg-config --libs gmp)
 
 all: keygen encrypt decrypt	
 
-tests: tests_numtheory
+tests: tests_numtheory tests_ss
 
-check: tests_numtheory
+check-numtheory: tests_numtheory
 	./tests_numtheory
+
+check-ss: tests_ss
+	./tests_ss
 
 keygen: keygen.o ss.o randstate.o numtheory.o
 	$(CC) -o $@ $^ $(LIBFLAGS)
@@ -24,8 +27,11 @@ decrypt: decrypt.o ss.o randstate.o numtheory.o
 tests_numtheory: tests_numtheory.o numtheory.o randstate.o
 	$(CC) -o $@ $^ $(LIBFLAGS)
 
+tests_ss: tests_ss.o ss.o numtheory.o randstate.o
+	$(CC) -o $@ $^ $(LIBFLAGS)
+
 clean:
-	rm -f keygen encrypt decrypt  tests_numtheory *.o
+	rm -f keygen encrypt decrypt  tests_numtheory tests_ss *.o
 
 %.o : %.c
 	$(CC) $(CFLAGS) -c $<
