@@ -7,32 +7,29 @@ void ss_make_pub(mpz_t p, mpz_t q, mpz_t n, uint64_t nbits, uint64_t iters) {
     mpz_t p_check, q_check;
     mpz_inits(p_check, q_check, NULL);
 
-    // make pbits and qbits
-    uint64_t pbits = (random() % (((2 * nbits) / 5) - (nbits / 5))) + (nbits / 5); // make random number with range
-    uint64_t qbits = nbits - (2 * pbits); // remaining bits go to qbits
-
-    // make primes
-    make_prime(p, pbits, iters);
-    make_prime(q, qbits, iters);
-    // make minus one version
-    mpz_sub_ui(p_check, p, 1);
-    mpz_sub_ui(q_check, q, 1);
-
-    // regenerate if p | (q-1) or q | (p-1)
-    while (mpz_divisible_p(q_check, p) || mpz_divisible_p(p_check, q)) {
-        pbits = (random() % (((2 * nbits) / 5) - (nbits / 5))) + (nbits / 5); // make random number with range
-        qbits = nbits - (2 * pbits); // remaining bits go to qbits
+    // loop until constraints are met
+    // p | (q-1) is false
+    // q | (p-1) is false
+    // log2(n) >= nbits  (i.e., n has at least the requested bit length)
+     do {
+        // make pbits and qbits
+        uint64_t pbits = (random() % (((2 * nbits) / 5) - (nbits / 5))) + (nbits / 5); // make random number with range
+        uint64_t qbits = nbits - (2 * pbits); // remaining bits go to qbits
 
         // make primes
         make_prime(p, pbits, iters);
         make_prime(q, qbits, iters);
-        //make minus one version
+
+        // make minus one version
         mpz_sub_ui(p_check, p, 1);
         mpz_sub_ui(q_check, q, 1);
-    }
-    // n = p*p*q
-    mpz_mul(n, p, p);
-    mpz_mul(n, n, q);
+
+        // n = p*p*q
+        mpz_mul(n, p, p);
+        mpz_mul(n, n, q);
+
+        // loop again if any constraint fails
+    } while (mpz_divisible_p(q_check, p) || mpz_divisible_p(p_check, q) || mpz_sizeinbase(n, 2) < nbits);
 
     mpz_clears(p_check, q_check, NULL);
 }

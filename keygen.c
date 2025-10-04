@@ -5,6 +5,8 @@
 #include <sys/stat.h>
 #include <getopt.h>
 #include <inttypes.h>
+#include <errno.h>
+#include <ctype.h>
 
 #include "numtheory.h"
 #include "randstate.h"
@@ -25,11 +27,59 @@ int main(int argc, char** argv) {
 
     while ((opt = getopt(argc, argv, OPTIONS)) != -1) {
         switch (opt) {
-        case 'b': bits = (uint64_t) atoll(optarg); break;
-        case 'i': iters = (uint64_t) atoll(optarg); break;
+        case 'b': { // bits; digits >= 1
+            for (const char *t = optarg; *t; t++) {
+                if (!isdigit((unsigned char)*t)) {
+                    fprintf(stderr, "keygen: invalid -b <bits>: \"%s\"\n", optarg);
+                    return EXIT_FAILURE;
+                }
+            }
+            errno = 0;
+            char *end = NULL;
+            unsigned long long val = strtoul(optarg, &end, 10);
+            if (errno || end == optarg || *end != '\0' || val < 1ULL) {
+                fprintf(stderr, "keygen: invalid -b <bits>: \"%s\"\n", optarg);
+                return EXIT_FAILURE;
+            }
+            bits = (uint64_t) val;
+            break;
+        }
+        case 'i': { // iters; digits >= 1
+            for (const char *t = optarg; *t; t++) {
+                if (!isdigit((unsigned char)*t)) {
+                    fprintf(stderr, "keygen: invalid -i <iters>: \"%s\"\n", optarg);
+                    return EXIT_FAILURE;
+                }
+            }
+            errno = 0;
+            char *end = NULL;
+            unsigned long long val = strtoull(optarg, &end, 10);
+            if (errno || end == optarg || *end != '\0' || val < 1ULL) {
+                fprintf(stderr, "keygen: invalid -i <iters>: \"%s\"\n", optarg);
+                return EXIT_FAILURE;
+            }
+            iters = (uint64_t) val;
+            break;
+        }
         case 'n': pub_name = optarg; break;
         case 'd': priv_name = optarg; break;
-        case 's': seed = (uint64_t) atoll(optarg); break;
+        case 's': { // seed
+            for (const char *t = optarg; *t; t++) {
+                if (!isdigit((unsigned char)*t)) {
+                    fprintf(stderr, "keygen: invalid -s <seed>: \"%s\"\n", optarg);
+                    return EXIT_FAILURE;
+                }
+            }
+            errno = 0;
+            char *end = NULL;
+            unsigned long long val = strtoull(optarg, &end, 10);
+            if (errno || end == optarg || *end != '\0') {
+                fprintf(stderr, "keygen: invalid -s <seed>: \"%s\"\n", optarg);
+                return EXIT_FAILURE;
+            }
+            seed = (uint64_t) val;
+            break;
+        }
         case 'v': verb = 1; break;
         case 'h':
             printf(
