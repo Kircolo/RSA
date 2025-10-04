@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <errno.h>
 #include <ctype.h>
+#include <gmp.h>
 
 #include "numtheory.h"
 #include "randstate.h"
@@ -88,13 +89,13 @@ int main(int argc, char** argv) {
                 "USAGE\n"
                 "  keygen [-hv] [-b bits] [-i iters] [-n pbfile] [-d pvfile] [-s seed]\n\n"
                 "OPTIONS\n"
-                "  -h            Display program usage.\n"
                 "  -b bits       Min bit-length of modulus n (default: 1024).\n"
                 "  -i iters      Miller-Rabin iterations (default: 50).\n"
                 "  -n pbfile     Public key output (default: ss.pub).\n"
                 "  -d pvfile     Private key output (default: ss.priv).\n"
                 "  -s seed       RNG seed (default: time(NULL)).\n"
-                "  -v            Verbose output.\n");
+                "  -v            Verbose output.\n"
+                "  -h            Display program usage.\n");
             return 0;
         }
     }
